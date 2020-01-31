@@ -6,7 +6,7 @@
 
 In this tutorial, we'll cover how to go from a fresh AWS account to working example Python code to detect labels in an image. 
 
-If you'd like to try Rekognition in a live demo, you can check out one of the two following demos:
+If you'd like to get a taste for what Rekognition can do, check out the live demos listed below:
 
 - [Webcam capture, with javascript sample code](https://ai-service-demos.go-aws.com/rekognition)
 - [Upload picture or provide URL](https://console.aws.amazon.com/rekognition/home?region=us-east-1#/label-detection)
@@ -49,7 +49,7 @@ $ pip install boto3
 
 ### Create an access key for the user you created in *Create an IAM User*.
 
-- Sign in to the AWS Management Console and open the IAM console at https://console.aws.amazon.com/iam/.
+- Sign in to the AWS Management Console and open the [IAM console](https://console.aws.amazon.com/iam/)
 
 - In the navigation pane, choose *Users*.
 
@@ -207,7 +207,7 @@ The second script will invoke the `Rekognition` API via the Python SDK, returnin
 
 ## Finished
 
-Congrats! You just signed up for an account, setup proper `IAM` credentials, created your own `Amazon S3` bucket, uploaded an image to `S3`, and executed Python code that calls the `Amazon Rekognition` Service to detect the labels within your image.
+Congrats! You just signed up for an AWS account, setup proper `IAM` credentials, created your own `Amazon S3` bucket, uploaded an image to `S3`, and executed Python code that calls the `Amazon Rekognition` Service to detect the labels within your image.
 
 If you enjoyed this workshop, the experience for getting started with our other AI services is nearly identical! To get hands on and try them out, check out [these demoes here!](https://ai-service-demos.go-aws.com/)
 
