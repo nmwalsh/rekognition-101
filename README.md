@@ -9,7 +9,7 @@ In this tutorial, we'll cover how to go from a fresh AWS account to working exam
 If you'd like to get a taste for what Rekognition can do, check out the live demos listed below:
 
 - [Webcam capture, with javascript sample code](https://ai-service-demos.go-aws.com/rekognition)
-- [Upload picture or provide URL](https://console.aws.amazon.com/rekognition/home?region=us-east-1#/label-detection)
+- [Upload picture or provide URL (requires console login)](https://console.aws.amazon.com/rekognition/home?region=us-east-1#/label-detection)
 
 ## 1. Account Signup
 
@@ -216,4 +216,5 @@ If you enjoyed this workshop, the experience for getting started with our other 
 - [Setup for CLI and Other SDKs](https://docs.aws.amazon.com/rekognition/latest/dg/setup-awscli-sdk.html)
 - [AWS Rekognition Docs](https://docs.aws.amazon.com/rekognition/index.html)
 - [Other AI Services/APIs](https://aws.amazon.com/machine-learning/ai-services/)
+- [Boilerplate for ReactJS example app](https://github.com/nmwalsh/aws-ai-services-site)
 
