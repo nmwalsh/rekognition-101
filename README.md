@@ -6,11 +6,10 @@
 
 In this tutorial, we'll cover how to go from a fresh AWS account to working example Python code to detect labels in an image. 
 
-This tutorial ass
+If you'd like to try Rekognition in a live demo, you can check out one of the two following demos:
 
-To try Rekognition, you can check out one of the two demos:
-	- [Webcam capture, with javascript sample code](https://ai-service-demos.go-aws.com/rekognition)
-	- [Upload picture or provide URL](https://console.aws.amazon.com/rekognition/home?region=us-east-1#/label-detection)
+- [Webcam capture, with javascript sample code](https://ai-service-demos.go-aws.com/rekognition)
+- [Upload picture or provide URL](https://console.aws.amazon.com/rekognition/home?region=us-east-1#/label-detection)
 
 ## 1. Account Signup
 
@@ -29,11 +28,20 @@ To try Rekognition, you can check out one of the two demos:
 
 Services in AWS, such as Amazon Rekognition, require that you provide credentials when you access them. This is so that the service can determine whether you have permissions to access the resources owned by that service. The console requires your password. You can create access keys for your AWS account to access the AWS CLI or API. However, we don't recommend that you access AWS by using the credentials for your AWS account. Instead, we recommend that you:
 
+- Navigate to [these instructions](https://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started_create-admin-group.html) and follow the method for *Creating an Administrator IAM User and Group (Console)*
+
+- Add the following permissions for the new IAM user's role:
+
+	- `AmazonRekognitionFullAccess`
+	- `AmazonS3FullAccess`
+
+*Note:* An IAM user with administrator permissions has unrestricted access to the AWS services in your account. For information about restricting access to Amazon Rekognition operations, see Using Identity-Based Policies (IAM Policies) for Amazon Rekognition. The code examples in this guide assume that you have a user with the `AmazonRekognitionFullAccess` permissions. `AmazonS3ReadOnlyAccess` is required for examples that access images or videos that are stored in an Amazon S3 bucket. The Amazon Rekognition Video stored video code examples also require `AmazonSQSFullAccess` permissions. 
+
 ## 3. Local CLI and SDK Installation + Setup
 
 ### Install the SDK
 
-- Install `boto3` (the AWS Python SDK) with `pip`.
+- From your terminal, install `boto3` (the AWS Python SDK) with `pip`.
 
 ```bash
 $ pip install boto3
@@ -66,10 +74,10 @@ On Windows, this is in the following location:
 %HOMEPATH%\.aws
 ```
 
-In the .aws directory, create a new file named `credentials`.
+- In the `.aws` directory, create a new file named `credentials`.
 
-Open the credentials CSV file that you created in step 2 and copy its contents into the credentials file using the following format:
-
+- Open the `credentials` CSV file that you created earlier and copy its contents into the new credentials file using the following format:
+ 
 ```
 [default]
 aws_access_key_id = your_access_key_id
@@ -78,7 +86,7 @@ aws_secret_access_key = your_secret_access_key
 
 _Substitute your acccess key ID and secret access key for your_access_key_id and your_secret_access_key._
 
-- Save the `credentials` file and delete the CSV file.
+- Save the `credentials` file and delete the older CSV file.
 
 ## 4. Application Code
 
@@ -94,16 +102,62 @@ Rekognition has a large number of functionalities including:
 
 For this tutorial we'll be using the *Detect Labels* method, but if you're interested in the other functions, you can find sample code for those [available here](https://gist.github.com/alexcasalboni/0f21a1889f09760f8981b643326730ff).
 
-## Write Python code
+### Write Python code
 
-- Create a new python file called `script.py` and paste the following code inside it.
+- The first bit of code that we'll want to write is a short script that uploads an image to `Amazon S3`. Once uploaded, we can use the uploaded object in S3 as the source for the `Rekognition` API call.
+
+- Open up your text editor of choice and create a new python file called `pic-upload.py`.
 
 ```python3
 import boto3
 
+def create_bucket(bucket_name, region=None):
+    try:
+        s3_client = boto3.client('s3')
+        s3_client.create_bucket(Bucket=bucket_name)
+
+    # catch error
+    except ClientError as e:
+        logging.error(e)
+        return False
+    return True
+
+def upload_image(file_name, bucket, object_name)
+	try:
+        s3_client = boto3.client('s3')
+        response = s3_client.upload_file(file_name, bucket, object_name)
+    except:
+        return False
+    return True
+
+
+# This name must be GLOBALLY unique or the bucket will not create! Something like a combination of the date, your initials, and the time would work best
+# ex: my_bucket_name = '01312020NW1337'
+my_bucket_name = "NAME-OF-YOUR-S3-BUCKET" 
+local_file_name = "name-of-file-locally.jpg"
+object_name = "desired-image-name-on-upload.jpg"
+
+create_bucket(my_bucket_name)
+upload_image(local_file_name, my_bucket_name, object_name)
+```
+
+*Note:* A common error here is attempting to create a bucket with a name that is not truly globally unique.
+
+- Save the file.
+
+- Create a new python file called `detection-script.py`
+
+- Paste the following code inside it.
+
+```python3
+import boto3
+
+# make sure to copy your bucket name properly
 BUCKET = "amazon-rekognition"
+# submit the filename for the image in your S3 bucket?
 KEY = "test.jpg"
 
+# define a function that will accept a bucket name, a key (image name), and maximum number of labels to return
 def detect_labels(bucket, key, max_labels=10, min_confidence=90, region="eu-west-1"):
 	rekognition = boto3.client("rekognition", region)
 	response = rekognition.detect_labels(
@@ -118,7 +172,7 @@ def detect_labels(bucket, key, max_labels=10, min_confidence=90, region="eu-west
 	)
 	return response['Labels']
 
-
+# call the detect_labels method, and iterate across all label results, printing each label and confidence interval
 for label in detect_labels(BUCKET, KEY):
 	print "{Name} - {Confidence}%".format(**label)
 
@@ -136,13 +190,26 @@ for label in detect_labels(BUCKET, KEY):
 
 ### Run your code
 
-- Open a terminal and `cd` into the directory where your `script.py` file resides.
+- Open a terminal and `cd` into the directory where your two Python scripts reside.
 
-- In your terminal:
+In your terminal:
 
-`$ python detect-labels.py`
+The first script will create an S3 bucket and upload an image to S3. 
 
-Congrats!
+- `$ python pic-upload.py`
+
+The second script will invoke the `Rekognition` API via the Python SDK, returning the labels for the image we uploaded.
+
+- `$ python detection-script.py`
+
+*Note:* For repeated use, once the bucket has been created, it's advised to comment out the `create_bucket(my_bucket_name)` method invokation at the bottom of `pic-upload.py`, as you only need to create the bucket once, and future attempts may cause errors/exceptions.
+
+
+## Finished
+
+Congrats! You just signed up for an account, setup proper `IAM` credentials, created your own `Amazon S3` bucket, uploaded an image to `S3`, and executed Python code that calls the `Amazon Rekognition` Service to detect the labels within your image.
+
+If you enjoyed this workshop, the experience for getting started with our other AI services is nearly identical! To get hands on and try them out, check out [these demoes here!](https://ai-service-demos.go-aws.com/)
 
 ### Other Resources
 
