@@ -108,7 +108,7 @@ For this tutorial we'll be using the *Detect Labels* method, but if you're inter
 
 - Open up your text editor of choice and create a new python file called `pic-upload.py`.
 
-```python3
+```python
 import boto3
 
 def create_bucket(bucket_name, region=None):
@@ -149,7 +149,7 @@ upload_image(local_file_name, my_bucket_name, object_name)
 
 - Paste the following code inside it.
 
-```python3
+```python
 import boto3
 
 # make sure to copy your bucket name properly
